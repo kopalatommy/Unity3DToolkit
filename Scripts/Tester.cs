@@ -64,5 +64,8 @@ public class Tester : MonoBehaviour
 
         OrderedListTester orderedListTester = new OrderedListTester();
         orderedListTester.RunTests(false, 60000);
+
+        KDTreeV1Tester kDTreeV1Tester = new KDTreeV1Tester();
+        kDTreeV1Tester.RunTests(false, 60000);
     }
 }

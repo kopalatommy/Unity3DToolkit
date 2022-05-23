@@ -82,9 +82,11 @@ namespace Toolkit.DataStructures
         public int Count { get { return count; } }
 
         // Array of points that make up the kd tree
-        ArrayList<Vector3> points;
+        Vector3[] points;
         // Index array
         private int[] permutation;
+        // Array of values in the tree
+        private T[] values;
         // Number of points in tree
         private int count;
 
@@ -100,16 +102,23 @@ namespace Toolkit.DataStructures
         public KDTree(int maxPointsPerLeaf = 32, int initialPoolSize = 64)
         {
             count = 0;
-            points = new ArrayList<Vector3>(count);
+            points = new Vector3[count];
+            values = new T[count];
             permutation = new int[count];
             this.maxPointsPerLeaf = maxPointsPerLeaf;
             pool = new ObjectPool<Node>(64);
         }
 
-        public void AddPoint(Vector3 point, bool build=true)
+        public void AddPoint(Vector3 point, T value, bool build=true)
         {
-            points.Add(point);
-            Array.Resize(ref permutation, points.Count);
+            count++;
+            Array.Resize(ref points, count);
+            Array.Resize(ref permutation, count);
+            Array.Resize(ref values, count);
+
+            points[count -  1] = point;
+            permutation[count - 1] = 0;
+            values[count - 1] = value;
             
             if(build)
             {
@@ -117,10 +126,16 @@ namespace Toolkit.DataStructures
             }
         }
 
-        public void AddPoints(Vector3[] points, bool build = true)
+        public void AddPoints(Vector3[] points, T[] values, bool build = true)
         {
-            this.points.Add(points);
-            Array.Resize(ref permutation, this.points.Count);
+            Array.Resize(ref this.points, count + points.Length);
+            Array.Resize(ref permutation, count + points.Length);
+            Array.Resize(ref this.values, count + points.Length);
+
+            Array.Copy(points, 0, this.points, count, points.Length);
+            Array.Copy(values, 0, this.values, count, values.Length);
+
+            count += points.Length;
 
             if (build)
             {
@@ -128,11 +143,15 @@ namespace Toolkit.DataStructures
             }
         }
 
-        public void SetPoints(Vector3[] points, bool build = true)
+        public void SetPoints(Vector3[] points, T[] values, bool build = true)
         {
-            this.points.Clear();
-            this.points.Add(points);
-            Array.Resize(ref permutation, this.points.Count);
+            count = points.Length;
+            Array.Resize(ref this.points, count);
+            Array.Resize(ref permutation, count);
+            Array.Resize(ref this.values, count);
+
+            Array.Copy(points, this.points, count);
+            Array.Copy(values, this.values, count);
 
             if (build)
             {
@@ -401,7 +420,7 @@ namespace Toolkit.DataStructures
                 do
                 {
                     leftIndex++;
-                }while(leftIndex < rightIndex && points[permutation[rightIndex]][axis] < partitionPivot);
+                }while(leftIndex < rightIndex && points[permutation[leftIndex]][axis] < partitionPivot);
 
                 do
                 {
@@ -490,16 +509,6 @@ namespace Toolkit.DataStructures
 
         private ObjectPool<QueryNode> queryPool;
         private MinHeap<QueryNode> queryMinHeap;
-        private int queryCount;
-        private int queryIndex;
-
-        private int LeftToProcess
-        {
-            get
-            {
-                return queryCount - queryIndex;
-            }
-        }
 
         private void ResetQuery()
         {
@@ -521,14 +530,11 @@ namespace Toolkit.DataStructures
             }
         }
 
-        public void ClosestPoint(Vector3 queryLoc, ArrayList<int> resultIndices, ArrayList<float> resultDistances = null)
+        public void ClosestPoint(Vector3 queryLoc, ArrayList<T> resultValues, ArrayList<float> resultDistances = null)
         {
             ResetQuery();
 
-            ArrayList<Vector3> searchPoints = points;
-            int[] searchPermutation = permutation;
-
-            if (searchPoints.Count == 0)
+            if (points.Length == 0)
             {
                 Debug.Log("Trying to search empty tree");
                 return;
@@ -612,18 +618,18 @@ namespace Toolkit.DataStructures
                     }
                 }
             }
-            resultIndices.Add(smallestIndex);
+            resultValues.Add(values[smallestIndex]);
             if(resultDistances != null)
             {
                 resultDistances.Add(smallestSquaredRadius);
             }
         }
 
-        public void Interval(Vector3 min, Vector3 max, ArrayList<int> resultIndices)
+        public void Interval(Vector3 min, Vector3 max, ArrayList<T> resultValues)
         {
             ResetQuery();
 
-            ArrayList<Vector3> searchPoints = points;
+            Vector3[] searchPoints = points;
             int[] searchPermutation = permutation;
 
             Queue<QueryNode> queryQueue = new Queue<QueryNode>();
@@ -691,7 +697,7 @@ namespace Toolkit.DataStructures
                     {
                         for(int i = node.start; i < node.end; i++)
                         {
-                            resultIndices.Add(permutation[i]);
+                            resultValues.Add(values[permutation[i]]);
                         }
                     }
                     else
@@ -709,7 +715,7 @@ namespace Toolkit.DataStructures
                                 v[1] <= max[1] &&
                                 v[2] <= max[2])
                             {
-                                resultIndices.Add(index);
+                                resultValues.Add(values[index]);
                             }
                         }
                     }
@@ -717,7 +723,7 @@ namespace Toolkit.DataStructures
             }
         }
 
-        public void KNearest(Vector3 queryLoc, int k, IListExtented<int> resultIndices, IListExtented<float> resultDistances = null)
+        public void KNearest(Vector3 queryLoc, int k, IListExtented<T> resultIndices, IListExtented<float> resultDistances = null)
         {
             if(k > count)
             {
@@ -729,7 +735,7 @@ namespace Toolkit.DataStructures
 
             ResetQuery();
 
-            ArrayList<Vector3> searchPoints = points;
+            Vector3[] searchPoints = points;
             int[] searchPermutation = permutation;
 
             float BSSR = float.PositiveInfinity;
@@ -818,7 +824,7 @@ namespace Toolkit.DataStructures
             for(int i = 0; i < k; i++)
             {
                 Pair<int, float> temp = smallestIndices[i];
-                resultIndices.Add(temp.Key);
+                resultIndices.Add(values[temp.Key]);
                 if(resultDistances != null)
                 {
                     resultDistances.Add(temp.Value);

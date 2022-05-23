@@ -7,7 +7,7 @@ namespace Toolkit.DataStructures.Visualizations
     public class KDVisualizer : MonoBehaviour
     {
         //Vector3[] pointCloud;
-        KDTree<Vector3> tree;
+        KDTree<GameObject> tree;
 
         GameObject[] cubes;
         Vector3[] locs;
@@ -28,8 +28,8 @@ namespace Toolkit.DataStructures.Visualizations
                 cubes[i] = Instantiate(cube, locs[i], Quaternion.identity);
             }
 
-            tree = new KDTree<Vector3>();
-            tree.AddPoints(locs);
+            tree = new KDTree<GameObject>();
+            tree.AddPoints(locs, cubes);
 
             /*pointCloud = new Vector3[20000];
 
@@ -69,7 +69,7 @@ namespace Toolkit.DataStructures.Visualizations
 
             tree.Rebuild();
 
-            DoublyLinkedList<int> list = new DoublyLinkedList<int>();
+            DoublyLinkedList<GameObject> list = new DoublyLinkedList<GameObject>();
             tree.KNearest(Vector3.one * 3, 10, list);
         }
 
