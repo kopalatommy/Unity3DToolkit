@@ -1,0 +1,2 @@
+ToDo List:
+1 - Go throught all data structures that use the .compareTo function and condense down to 1 int
