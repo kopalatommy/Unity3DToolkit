@@ -48,7 +48,7 @@ namespace Toolkit.DataStructures
                     prev = value;
                 }
             }
-            protected Node prev;
+            protected Node prev = null;
 
             /*public Node next
             {
@@ -157,9 +157,10 @@ namespace Toolkit.DataStructures
             }
         }
 
-        public static IListExtented<T> operator +(DoublyLinkedList<T> self, IListExtented<T> other)
+        public static DoublyLinkedList<T> operator +(DoublyLinkedList<T> self, IListExtented<T> other)
         {
-            IListExtented<T> toRet = new DoublyLinkedList<T>(self);
+            DoublyLinkedList<T> toRet = new DoublyLinkedList<T>(self);
+
             toRet.Add(other);
             return toRet;
         }
@@ -222,24 +223,14 @@ namespace Toolkit.DataStructures
             }
             else
             {
-                head.Prev = new Node(item, null, head);
-                head = head.Prev;
+                head = new Node(item, null, head);
+                //head = head.Prev;
             }
             count++;
         }
 
         public virtual void Add(IEnumerable<T> other)
         {
-            /*UnityEngine.Debug.Log("Doubly linked list add IEnumerable");
-            UnityEngine.Debug.Log("Self is null: " + (this == null));
-            UnityEngine.Debug.Log("Other is null: " + (other == null));
-            UnityEngine.Debug.Log("Other enum is null: " + (other.GetEnumerator() == null));
-            foreach (T item in other)
-            {
-                UnityEngine.Debug.Log(item);
-                tail = tail.Next = new Node(item, tail, null);
-                count++;
-            }*/
             AppendBack(other);
         }
 
@@ -251,29 +242,26 @@ namespace Toolkit.DataStructures
             }
             else
             {
-                tail.Next = new Node(item, tail, null);
-                tail = tail.Next;
+                tail = new Node(item, tail, null);
             }
             count++;
         }
 
         public virtual void AppendBack(IEnumerable<T> other)
         {
-            UnityEngine.Debug.Log("This type: " + GetType());
             foreach (T item in other)
             {
-                UnityEngine.Debug.Log(item);
-                tail = tail.Next = new Node(item, tail, null);
+                if (head == null)
+                {
+                    head = tail = new Node(item, null, null);
+                }
+                else
+                {
+                    tail = new Node(item, tail, null);
+                }
                 count++;
             }
         }
-
-        /*public DoublyLinkedList<T> AppendBack(IEnumerable<T> other)
-        {
-            UnityEngine.Debug.Log(other.GetType());
-            Add(other);
-            return this;
-        }*/
 
         public virtual void Insert(int index, T item)
         {
@@ -301,8 +289,8 @@ namespace Toolkit.DataStructures
                 {
                     cur = GoToReverse(tail, count - index);
                 }
-                Node n = new Node(item, cur, cur.Next);
-                cur.Next = cur.Next.Prev = n;
+                /*Node n =*/ new Node(item, cur, cur.Next);
+                //cur.Next = cur.Next.Prev = n;
                 count++;
             }
         }
@@ -330,7 +318,7 @@ namespace Toolkit.DataStructures
                 }
                 foreach(T item in other)
                 {
-                    cur = cur.Next = cur.Next.Prev = new Node(item, cur, cur.Next);
+                    /*cur = cur.Next = cur.Next.Prev =*/ new Node(item, cur, cur.Next);
                     count++;
                 }
             }
@@ -378,8 +366,10 @@ namespace Toolkit.DataStructures
                     Node ind = index < count / 2 ? GoToForward(head, index - 1) : GoToReverse(tail, count - index);
                     T item = ind.Next.item;
                     count--;
-                    ind.Next.Next.Prev = ind;
                     ind.Next = ind.Next.Next;
+
+                    /*ind.Next.Next.Prev = ind;
+                    ind.Next = ind.Next.Next;*/
                     return item;
                 }
             }
@@ -420,15 +410,20 @@ namespace Toolkit.DataStructures
                         if (cur.Prev != null)
                         {
                             cur.Prev.Next = cur.Next;
+                            if(cur.Prev.Next == null)
+                            {
+                                tail = cur;
+                            }
+
                             // If the next node is null, then set head to the current node
-                            if (cur.Prev.Next != null)
+                            /*if (cur.Prev.Next != null)
                             {
                                 cur.Prev.Next.Prev = cur.Prev;
                             }
                             else
                             {
                                 tail = cur;
-                            }
+                            }*/
                         }
                         else
                         {
@@ -505,7 +500,7 @@ namespace Toolkit.DataStructures
                 {
                     Node ind = index < count / 2 ? GoToForward(head, index - 1) : GoToReverse(tail, count - index);
                     count--;
-                    ind.Next.Next.Prev = ind;
+                    //ind.Next.Next.Prev = ind;
                     ind.Next = ind.Next.Next;
                 }
             }
@@ -546,7 +541,14 @@ namespace Toolkit.DataStructures
                         if (cur.Prev != null)
                         {
                             cur.Prev.Next = cur;
-                            // If the next node is null, then set head to the current node
+                            if(cur.Prev.Next == null)
+                            {
+                                tail = cur;
+                                count--;
+                                break;
+                            }
+
+                            /*// If the next node is null, then set head to the current node
                             if (cur.Prev.Next != null)
                             {
                                 cur.Prev.Next.Prev = cur;
@@ -556,7 +558,7 @@ namespace Toolkit.DataStructures
                                 tail = cur;
                                 count--;
                                 break;
-                            }
+                            }*/
                         }
                         else
                         {

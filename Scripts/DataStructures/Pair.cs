@@ -15,5 +15,10 @@ namespace Toolkit.DataStructures
             Key = key;
             Value = value;
         }
+
+        public override string ToString()
+        {
+            return "(" + Key.ToString() + ", " + Value.ToString() + ")";
+        }
     }
 }

@@ -23,8 +23,8 @@ public class Tester : MonoBehaviour
         /*LinkedListTester llTester = new LinkedListTester();
         llTester.RunTests();*/
 
-        /*DoublyLinkedListTester dllTester = new DoublyLinkedListTester();
-        dllTester.RunTests(false, 60000);*/
+        DoublyLinkedListTester dllTester = new DoublyLinkedListTester();
+        dllTester.RunTests(false, 60000);
 
         /*CircularListTester circularListTester = new CircularListTester();
         circularListTester.RunTests();*/

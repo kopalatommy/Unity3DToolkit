@@ -322,5 +322,144 @@ namespace Toolkit.DataStructures.Tests
             }
             return true;
         }
+
+        [RunTest(true)]
+        public bool GetIntervalTest1()
+        {
+            if(verbose)
+            {
+                Debug.Log("Starting GetIntervalTest1 for " + testName);
+            }
+
+            KDTree<int> tree = new KDTree<int>();
+
+            tree.AddPoint(Vector3.zero, 0, false);
+            tree.AddPoint(Vector3.one, 1, false);
+            tree.Rebuild();
+
+            ArrayList<int> result = new ArrayList<int>();
+            tree.Interval(Vector3.zero, Vector3.one, result);
+
+            if(result.Count == 2)
+            {
+                return true;
+            }
+            else
+            {
+                Debug.Log(testName + " GetIntervalTest1 failed to get all items in interval");
+                return false;
+            }
+        }
+
+        [RunTest(true)]
+        public bool GetIntervalTest2()
+        {
+            if (verbose)
+            {
+                Debug.Log("Starting GetIntervalTest2 for " + testName);
+            }
+
+            KDTree<int> tree = new KDTree<int>();
+
+            /*tree.AddPoint(Vector3.zero, 0, false);
+            tree.AddPoint(Vector3.one, 1, false);
+            tree.AddPoint(Vector3.one * 2, 2, false);
+            tree.Rebuild();*/
+
+            Vector3[] points = { Vector3.one * 0, Vector3.one * 1, Vector3.one * 2 };
+            int[] vals = { 0, 1, 2};
+
+            tree.SetPoints(points, vals);
+
+            ArrayList<int> result = new ArrayList<int>();
+            tree.Interval(Vector3.zero, Vector3.one, result);
+
+            if (result.Count == 2)
+            {
+                if(!result.Contains(0))
+                {
+                    Debug.Log(testName + " GetIntervalTest2 failed to get 0");
+                    return false;
+                }
+                else if(!result.Contains(1))
+                {
+                    Debug.Log(testName + " GetIntervalTest2 failed to get 1");
+                    return false;
+                }
+
+                return true;
+            }
+            else
+            {
+                Debug.Log(testName + " GetIntervalTest2 failed to get 2 items. Count: " + result.Count);
+                return false;
+            }
+        }
+
+        [RunTest(true)]
+        public bool GetKNearestTest1()
+        {
+            if (verbose)
+            {
+                Debug.Log("Starting GetKNearestTest1 for " + testName);
+            }
+
+            KDTree<int> tree = new KDTree<int>();
+
+            for(int i = 0; i < 10; i++)
+            {
+                tree.AddPoint(Vector3.one * i, i, i == 9);
+            }
+
+            ArrayList<int> result = new ArrayList<int>();
+            tree.KNearest(Vector3.one * 5, 3, result);
+
+            if(result.Count != 3)
+            {
+                Debug.Log(testName + " GetKNearestTest1 result length != 3. Count: " + result.Count);
+                return false;
+            }
+
+            /*for(int i = 0; i < 10; i++)
+            {
+                //Debug.Log(i + " = " + Vector3.Distance(Vector3.one*5, Vector3.one*i));
+                Debug.Log(i + " = " + (Vector3.SqrMagnitude((Vector3.one * 5) - (Vector3.one * i))));
+            }*/
+
+            if(!result.Contains(5) || !result.Contains(6) || !result.Contains(4))
+            {
+                Debug.Log(testName + " GetKNearestTest1 contains wrong items. Count: " + result);
+                return false;
+            }
+
+            return true;
+        }
+
+        [RunTest(true)]
+        public bool RadiusTest1()
+        {
+            if (verbose)
+            {
+                Debug.Log("Starting RadiusTest1 for " + testName);
+            }
+
+            KDTree<int> tree = new KDTree<int>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                tree.AddPoint(Vector3.one * i, i, i == 9);
+            }
+
+            ArrayList<int> result = new ArrayList<int>();
+            tree.Radius(Vector3.one * 5, 2, result);
+
+            if (!result.Contains(5) || !result.Contains(6) || !result.Contains(4))
+            {
+                Debug.Log(testName + " GetKNearestTest1 contains wrong items. Count: " + result);
+                return false;
+            }
+
+            return result.Count == 3;
+        }
     }
 }

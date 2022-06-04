@@ -16,7 +16,7 @@ namespace Toolkit.DataStructures.Tests
 
         // This tests wether the list can access all added items and returns
         // the proper items
-        [RunTest(false)]
+        [RunTest(true)]
         private bool GetTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -49,7 +49,7 @@ namespace Toolkit.DataStructures.Tests
 
         // This tests the error cases. This makes sure an error is returned if
         // trying to access an invalid index
-        [RunTest(false)]
+        [RunTest(true)]
         private bool GetTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -95,7 +95,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region SetTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool SetTest1()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -111,7 +111,7 @@ namespace Toolkit.DataStructures.Tests
                 return false;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool SetTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -130,7 +130,7 @@ namespace Toolkit.DataStructures.Tests
             }
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool SetTest3()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -152,7 +152,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region AddTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool AppendFrontTest1()
         {
             DoublyLinkedList<int> listA = new DoublyLinkedList<int>();
@@ -175,53 +175,65 @@ namespace Toolkit.DataStructures.Tests
             return (listC.Count == listA.Count + listB.Count);
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool AppendFrontTest2()
         {
             DoublyLinkedList<int> listA = new DoublyLinkedList<int>();
             DoublyLinkedList<int> listB = new DoublyLinkedList<int>();
 
             for (int i = 9; i >= 0; i--)
+            {
                 listA.AppendFront(i);
+            }
 
             for (int i = 19; i >= 10; i--)
+            {
                 listB.AppendFront(i);
+            }
 
             listA = (listA + listB) as DoublyLinkedList<int>;
 
             for (int i = 0; i < 20; i++)
             {
                 if (listA.Get(i) != i)
+                {
                     return false;
+                }
             }
 
             return listA.Count == 20;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool AppendBackTest1()
         {
             DoublyLinkedList<int> listA = new DoublyLinkedList<int>();
             DoublyLinkedList<int> listB = new DoublyLinkedList<int>();
 
             for (int i = 0; i < 10; i++)
+            {
                 listA.AppendBack(i);
+            }
 
             for (int i = 10; i < 20; i++)
+            {
                 listB.AppendBack(i);
+            }
 
             DoublyLinkedList<int> listC = (listA + listB) as DoublyLinkedList<int>;
 
             for (int i = 0; i < 20; i++)
             {
                 if (listC.Get(i) != i)
+                {
                     return false;
+                }
             }
 
             return (listC.Count == listA.Count + listB.Count);
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool AppendBackTest2()
         {
             DoublyLinkedList<int> listA = new DoublyLinkedList<int>();
@@ -237,7 +249,7 @@ namespace Toolkit.DataStructures.Tests
                 listB.AppendBack(i);
             }
 
-            listA = (listA + listB) as DoublyLinkedList<int>;
+            listA = (listA + listB);
 
             for (int i = 0; i < 20; i++)
             {
@@ -254,7 +266,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region InsertTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool InsertTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -280,7 +292,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 10;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool InsertTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -306,7 +318,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 10;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool InsertTest3()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -326,7 +338,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region EnumTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         public bool EnumTest1()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -352,7 +364,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region TakeFirstTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeFirstTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -373,7 +385,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 0;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeFirstTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -389,7 +401,7 @@ namespace Toolkit.DataStructures.Tests
             }
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeFirstTest3()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -416,7 +428,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region TakeAtTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeAtTest1()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -427,7 +439,7 @@ namespace Toolkit.DataStructures.Tests
             return DoublyLinkedList.TakeAt(5) == 5;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeAtTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -465,7 +477,7 @@ namespace Toolkit.DataStructures.Tests
             return true;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeAtTest3()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -484,7 +496,7 @@ namespace Toolkit.DataStructures.Tests
             }
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool TakeAtTest4()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -505,7 +517,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region ContainsTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool ContainsTest1()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -516,7 +528,7 @@ namespace Toolkit.DataStructures.Tests
             return DoublyLinkedList.Contains(1);
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool ContainsTest2()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -527,7 +539,7 @@ namespace Toolkit.DataStructures.Tests
             return DoublyLinkedList.Contains(11) == false;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool ContainsTest3()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -539,7 +551,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region RemoveTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -558,7 +570,7 @@ namespace Toolkit.DataStructures.Tests
             }
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveTest2()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -580,7 +592,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region RemoveAtTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAtTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -593,7 +605,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 9 && list.Contains(3) == false;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAtTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -609,7 +621,7 @@ namespace Toolkit.DataStructures.Tests
             }
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAtTest3()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -632,7 +644,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 9;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAtTest4()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -659,7 +671,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region RemoveRangeTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveRangeTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -686,7 +698,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 6;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveRangeTest2()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -709,7 +721,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region RemoveAllTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAllTest1()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -722,7 +734,7 @@ namespace Toolkit.DataStructures.Tests
             return DoublyLinkedList.Count == 0;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAllTest2()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -738,7 +750,7 @@ namespace Toolkit.DataStructures.Tests
             return DoublyLinkedList.Count == 5;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool RemoveAllTest3()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -758,7 +770,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region RemoveFirstTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         public bool RemoveFirstTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -779,7 +791,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 1;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         public bool RemoveFirstTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -805,7 +817,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region RemoveFirstTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         public bool RemoveLastTest1()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -826,7 +838,7 @@ namespace Toolkit.DataStructures.Tests
             return list.Count == 1;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         public bool RemoveLastTest2()
         {
             DoublyLinkedList<int> list = new DoublyLinkedList<int>();
@@ -852,7 +864,7 @@ namespace Toolkit.DataStructures.Tests
 
         #region IndexOfTests
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool IndexOfTest1()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -863,7 +875,7 @@ namespace Toolkit.DataStructures.Tests
             return DoublyLinkedList.IndexOf(5) == 5;
         }
 
-        [RunTest(false)]
+        [RunTest(true)]
         private bool IndexOfTest2()
         {
             DoublyLinkedList<int> DoublyLinkedList = new DoublyLinkedList<int>();
@@ -883,7 +895,7 @@ namespace Toolkit.DataStructures.Tests
         /// without failing.
         /// </summary>
         /// <returns>True if no error</returns>
-        [RunTest(false)]
+        [RunTest(true)]
         private bool LargeScaleTest1()
         {
             DoublyLinkedList<int> lst = new DoublyLinkedList<int>();

@@ -184,8 +184,9 @@ namespace Toolkit.DataStructures
             Vector3 min = new Vector3(float.MaxValue, float.MaxValue, float.MaxValue);
             Vector3 max = new Vector3(float.MinValue, float.MinValue, float.MinValue);
 
-            int even = count & -1;
-            for(int i = 0; i < even; i += 2)
+            int even = count & ~1;
+            //int even = count / 2;
+            for (int i = 0; i < even; i += 2)
             {
                 int j = i + 1;
 
@@ -346,7 +347,7 @@ namespace Toolkit.DataStructures
             posNode.end = node.end;
             node.positive = posNode;
 
-            if(negNode.Count != 0)
+            if(negNode.Count != 0 && posNode.Count != 0)
             {
                 if(ContinueSplit(negNode))
                 {
@@ -469,6 +470,13 @@ namespace Toolkit.DataStructures
                 this.node = node;
                 closestPoint = closest;
                 this.distance = distance;
+            }
+
+            public void Populate(Node node, Vector3 closestPoint, Vector3 queryPos)
+            {
+                this.node = node;
+                this.closestPoint = closestPoint;
+                this.distance = Vector3.SqrMagnitude(closestPoint - queryPos);
             }
 
             public void Populate(Node node, Vector3 closestPoint)
@@ -735,13 +743,10 @@ namespace Toolkit.DataStructures
 
             ResetQuery();
 
-            Vector3[] searchPoints = points;
-            int[] searchPermutation = permutation;
-
             float BSSR = float.PositiveInfinity;
 
             QueryNode qN = queryPool.Pop();
-            qN.Populate(root, root.bounds.ClosestPoint(queryLoc), Vector3.Distance(queryLoc, root.bounds.ClosestPoint(queryLoc)));
+            qN.Populate(root, root.bounds.ClosestPoint(queryLoc), queryLoc);
             queue.AppendBack(qN);
 
             int partitionAxis;
@@ -758,6 +763,8 @@ namespace Toolkit.DataStructures
                 // nearest collection
                 if(cur.distance > BSSR)
                 {
+                    UnityEngine.Debug.Log("Skipping node; " + cur.node.start + " - " + cur.node.end);
+                    UnityEngine.Debug.Log("BSSR: " + BSSR + " dist: " + cur.distance);
                     continue;
                 }
 
@@ -772,7 +779,7 @@ namespace Toolkit.DataStructures
                     if ((closestPoint[partitionAxis] - partitionCoord) < 0)
                     {
                         qN = queryPool.Pop();
-                        qN.Populate(node.negative, node.negative.bounds.ClosestPoint(queryLoc), Vector3.Distance(queryLoc, node.negative.bounds.ClosestPoint(queryLoc)));
+                        qN.Populate(node.negative, closestPoint, queryLoc);
                         queue.AppendBack(qN);
 
                         closestPoint[partitionAxis] = partitionCoord;
@@ -780,14 +787,14 @@ namespace Toolkit.DataStructures
                         if (node.positive.Count != 0)
                         {
                             qN = queryPool.Pop();
-                            qN.Populate(node.positive, node.positive.bounds.ClosestPoint(queryLoc), Vector3.Distance(queryLoc, node.positive.bounds.ClosestPoint(queryLoc)));
+                            qN.Populate(node.positive, closestPoint, queryLoc);
                             queue.AppendBack(qN);
                         }
                     }
                     else
                     {
                         qN = queryPool.Pop();
-                        qN.Populate(node.positive, node.positive.bounds.ClosestPoint(queryLoc), Vector3.Distance(queryLoc, node.positive.bounds.ClosestPoint(queryLoc)));
+                        qN.Populate(node.positive, closestPoint, queryLoc);
                         queue.AppendBack(qN);
 
                         closestPoint[partitionAxis] = partitionCoord;
@@ -795,7 +802,7 @@ namespace Toolkit.DataStructures
                         if (node.positive.Count != 0)
                         {
                             qN = queryPool.Pop();
-                            qN.Populate(node.negative, node.negative.bounds.ClosestPoint(queryLoc), Vector3.Distance(queryLoc, node.negative.bounds.ClosestPoint(queryLoc)));
+                            qN.Populate(node.negative, closestPoint, queryLoc);
                             queue.AppendBack(qN);
                         }
                     }
@@ -814,20 +821,96 @@ namespace Toolkit.DataStructures
 
                             if(smallestIndices.Count >= k)
                             {
-                                BSSR = smallestIndices[k - 1].Value;
+                                BSSR = smallestIndices[smallestIndices.Count - k].Value;
                             }
                         }
                     }
                 }
             }
 
-            for(int i = 0; i < k; i++)
+            for(int i = smallestIndices.Count - k; i < smallestIndices.Count; i++)
             {
                 Pair<int, float> temp = smallestIndices[i];
                 resultIndices.Add(values[temp.Key]);
                 if(resultDistances != null)
                 {
                     resultDistances.Add(temp.Value);
+                }
+            }
+        }
+
+        public void Radius(Vector3 queryLoc, float radius, IListExtented<T> resultValues)
+        {
+            float squaredDist = radius * radius;
+
+            ResetQuery();
+
+            Queue<QueryNode> queue = new Queue<QueryNode>();
+
+            QueryNode queryNode = queryPool.Pop();
+            queryNode.Populate(root, root.bounds.ClosestPoint(queryLoc));
+            queue.AppendBack(queryNode);
+
+            Node node;
+            QueryNode toAdd;
+            while(queue.Count > 0)
+            {
+                queryNode = queue.Dequeue();
+                node = queryNode.node;
+
+                if(!node.IsLeaf)
+                {
+                    int partitionAxis = node.partitionAxis;
+                    float partitionCoord = node.partitionCoordinate;
+
+                    Vector3 closestPoint = queryNode.closestPoint;
+
+                    if ((closestPoint[partitionAxis] - partitionCoord) < 0)
+                    {
+                        toAdd = queryPool.Pop();
+                        toAdd.Populate(node.negative, node.negative.bounds.ClosestPoint(closestPoint));
+                        queue.AppendBack(toAdd);
+
+                        closestPoint[partitionAxis] = partitionCoord;
+
+                        float sqrDist = Vector3.SqrMagnitude(closestPoint - queryLoc);
+
+                        if(node.positive.Count != 0 && sqrDist <= squaredDist)
+                        {
+                            toAdd = queryPool.Pop();
+                            toAdd.Populate(node.positive, node.positive.bounds.ClosestPoint(closestPoint));
+                            queue.Add(toAdd);
+                        }
+                    }
+                    else
+                    {
+                        toAdd = queryPool.Pop();
+                        toAdd.Populate(node.positive, node.positive.bounds.ClosestPoint(closestPoint));
+                        queue.Add(toAdd);
+
+                        closestPoint[partitionAxis] = partitionCoord;
+
+                        float sqrDist = Vector3.SqrMagnitude(closestPoint - queryLoc);
+
+                        if(node.negative.Count != 0 && sqrDist <= squaredDist)
+                        {
+                            toAdd = queryPool.Pop();
+                            toAdd.Populate(node.negative, node.negative.bounds.ClosestPoint(queryLoc));
+                            queue.Add(toAdd);
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = node.start; i < node.end; i++)
+                    {
+                        int index = permutation[i];
+
+                        if (Vector3.SqrMagnitude(points[index] - queryLoc) <= squaredDist)
+                        {
+                            resultValues.Add(values[index]);
+                        }
+                    }
                 }
             }
         }
